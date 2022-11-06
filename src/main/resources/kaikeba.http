@@ -1,0 +1,38 @@
+POST https://xiaoe.kaikeba.com/api/xe.goods.relation.get/1.0.0?app_id=appqszhpsdw5896
+Accept: application/json, text/plain, */*
+Accept-Encoding: gzip, deflate, br
+Accept-Language: zh-CN,zh;q=0.9,en;q=0.8
+App-Id: appqszhpsdw5896
+Cache-Control: no-cache
+Connection: keep-alive
+Content-Length: 170
+Content-Type: application/json;charset=UTF-8
+Cookie: sensorsdata2015jssdkcross=%7B%22distinct_id%22%3A%221842e9c7987604-07802cf301c17dc-26021f51-4953600-1842e9c7988e33%22%2C%22first_id%22%3A%22%22%2C%22props%22%3A%7B%22%24latest_traffic_source_type%22%3A%22%E8%87%AA%E7%84%B6%E6%90%9C%E7%B4%A2%E6%B5%81%E9%87%8F%22%2C%22%24latest_search_keyword%22%3A%22%E6%9C%AA%E5%8F%96%E5%88%B0%E5%80%BC%22%2C%22%24latest_referrer%22%3A%22https%3A%2F%2Fwww.baidu.com%2Flink%22%7D%2C%22identities%22%3A%22eyIkaWRlbnRpdHlfY29va2llX2lkIjoiMTg0MmU5Yzc5ODc2MDQtMDc4MDJjZjMwMWMxN2RjLTI2MDIxZjUxLTQ5NTM2MDAtMTg0MmU5Yzc5ODhlMzMifQ%3D%3D%22%2C%22history_login_id%22%3A%7B%22name%22%3A%22%22%2C%22value%22%3A%22%22%7D%2C%22%24device_id%22%3A%221842e9c7987604-07802cf301c17dc-26021f51-4953600-1842e9c7988e33%22%7D; gr_user_id=f3c7974e-8384-4d98-b4b6-47c543d40350; shop_version_type=8; anonymous_user_key=dV9hbm9ueW1vdXNfNjM2NjRiMTgyNDMxYV9JOGhwOFczREVm; LANGUAGE_appqszhpsdw5896=cn; dataUpJssdkCookie={"wxver":"","net":"","sid":""}; sajssdk_2015_new_user_xiaoe_kaikeba_com=1; Hm_lvt_156e88c022bf41570bf96e74d090ced7=1667229315,1667648863; deviceId=3fb28f940084577225a1047fcad6b484; ssoToken=21936ec01e7bb8d6f20d641a29400295; passportUid=20264390; access-edu_online=282e6ce0b58dfd730c9d47675aed6b4b; Hm_lpvt_156e88c022bf41570bf96e74d090ced7=1667649280; pc_user_key=65036b985f71ce989fa3c7a8baf97334; xenbyfpfUnhLsdkZbX=0; userInfo={"app_id":"appqszhpsdw5896","user_id":"u_635a25f4dc737_s1boE5ph8a","wx_avatar":"http://commonresource-1252524126.cdn.xiaoeknow.com/image/default.svg","wx_gender":0,"birth":null,"address":null,"job":null,"company":null,"wx_account":null,"universal_union_id":null,"can_modify_phone":true,"phone":"15321576299","pc_user_key":"65036b985f71ce989fa3c7a8baf97334","permission_visit":0,"permission_comment":0,"permission_buy":0,"pwd_isset":true,"channels":[{"type":"wechat","active":0},{"type":"qq","active":0}],"area_code":"86"}; app_id="appqszhpsdw5896"; sa_jssdk_2015_xiaoe_kaikeba_com=%7B%22distinct_id%22%3A%22u_635a25f4dc737_s1boE5ph8a%22%2C%22first_id%22%3A%22184479559ad943-0cb4ed25100e3f-26021e51-4953600-184479559aeff2%22%2C%22props%22%3A%7B%22%24latest_traffic_source_type%22%3A%22%E7%9B%B4%E6%8E%A5%E6%B5%81%E9%87%8F%22%2C%22%24latest_search_keyword%22%3A%22%E6%9C%AA%E5%8F%96%E5%88%B0%E5%80%BC_%E7%9B%B4%E6%8E%A5%E6%89%93%E5%BC%80%22%2C%22%24latest_referrer%22%3A%22%22%7D%7D
+DNT: 1
+Host: xiaoe.kaikeba.com
+Origin: https://xiaoe.kaikeba.com
+Pragma: no-cache
+Referer: https://xiaoe.kaikeba.com/detail/p_62e9f8fbe4b0c9426482a91b/6?l_program=xe_know_pc
+sec-ch-ua: "Google Chrome";v="107", "Chromium";v="107", "Not=A?Brand";v="24"
+sec-ch-ua-mobile: ?0
+sec-ch-ua-platform: "Windows"
+Sec-Fetch-Dest: empty
+Sec-Fetch-Mode: cors
+Sec-Fetch-Site: same-origin
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36
+
+{
+  "page_size": 20,
+  "product_id": "",
+  "goods_id": "p_62e9f8fbe4b0c9426482a91b",
+  "last_id": "v_62ecddbfe4b0c9426483d000",
+  "goods_type": 6,
+  "resource_type": [
+    1,
+    2,
+    3,
+    4,
+    20
+  ],
+  "order_type": 0
+}
