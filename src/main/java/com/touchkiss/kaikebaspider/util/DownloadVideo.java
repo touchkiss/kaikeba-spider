@@ -1,20 +1,12 @@
 package com.touchkiss.kaikebaspider.util;
 
 import cn.hutool.core.io.FileUtil;
-import cn.hutool.crypto.Mode;
-import cn.hutool.crypto.Padding;
-import cn.hutool.crypto.symmetric.AES;
 import cn.hutool.http.HttpUtil;
-import com.google.common.collect.Lists;
 import org.apache.commons.io.IOUtils;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.charset.Charset;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -29,15 +21,59 @@ public class DownloadVideo {
     public static final String TS_PATH = "D:\\kaikeba\\";
 
     public static void main(String[] args) throws IOException {
-//        downloadM3u8("https://pri-cdn-tx.xiaoeknow.com/appqszhpsdw5896/private_index/1664281714bYTu6O.m3u8?sign=f37aadaf99c265918108ba40f310fa6f&t=63667cd0",
-//                "https://c-vod.hw-cdn.xiaoeknow.com/",
-//                "529d8d60vodtransbj1252524126/c60df50f387702304282483292/drm"
-//                , "sign=f8ee1ed89bab1b426b1350a41817e796&t=63672590&us=dRWJfjOrLT&whref=xiaoe.kaikeba.com");
-//        downloadTs("https://c-vod.hw-cdn.xiaoeknow.com/529d8d60vodtransbj1252524126/c60df50f387702304282483292/drm/v.f421220_0.ts?start=0&end=134431&type=mpegts&sign=4f84df2f7b6699fd68b13c630fbd3a26&t=63673258&us=eAxuhKvpZS&whref=xiaoe.kaikeba.com", TS_PATH + "1.ts");
-        decryptVideo();
+        execCommand("ffmpeg -f concat -safe 0 -i D:\\kaikeba\\\\files.txt -c copy -strict -2 D:\\kaikeba\\\\1042分布式事务seata-模式-XA模式.mp4");
     }
 
-    public static void downloadM3u8(String m3u8Url, String tsHost, String tsPath, String tsParam) {
+    public static void execCommand(String cmd) {
+        try {
+            Runtime runtime = Runtime.getRuntime();
+            // 打开任务管理器，exec方法调用后返回 Process 进程对象
+            Process process = runtime.exec(cmd);
+            // 等待进程对象执行完成，并返回“退出值”，0 为正常，其他为异常
+            int exitValue = process.waitFor();
+            System.out.println("exitValue: " + exitValue);
+            // 销毁process对象
+            process.destroy();
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void aaa(String stam) {
+        BufferedReader br = null;
+        try {
+            File tmpFile = new File(TS_PATH + "temp.tmp");//新建一个用来存储结果的缓存文件
+            if (!tmpFile.exists()) {
+                tmpFile.createNewFile();
+            }
+            ProcessBuilder pb = new ProcessBuilder().command("cmd.exe", "/c", stam).inheritIO();
+            pb.redirectErrorStream(true);//这里是把控制台中的红字变成了黑字，用通常的方法其实获取不到，控制台的结果是pb.start()方法内部输出的。
+            pb.redirectOutput(tmpFile);//把执行结果输出。
+            pb.start().waitFor();//等待语句执行完成，否则可能会读不到结果。
+            InputStream in = new FileInputStream(tmpFile);
+            br = new BufferedReader(new InputStreamReader(in));
+            String line = null;
+            while ((line = br.readLine()) != null) {
+                System.out.println(line);
+            }
+            br.close();
+            br = null;
+            tmpFile.delete();//卸磨杀驴。
+            System.out.println("执行完成");
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public static void downloadM3u8(String m3u8Url, String mp4fileName, String tsHost, String tsPath, String tsParam, String uid) {
         String m3u8Response = HttpUtil.createGet(m3u8Url)
                 .header("accept", "*/*")
                 .header("accept-encoding", "gzip, deflate, br")
@@ -58,48 +94,63 @@ public class DownloadVideo {
                 .body();
         System.out.println(m3u8Response);
 
+
         AtomicInteger index = new AtomicInteger(1);
+        String keyFilePath = TS_PATH + "key.key";
+        List<String> tsFiles = new ArrayList<>();
         String m3u8 = Stream.of(m3u8Response.split("\\n"))
                 .map(String::trim)
                 .map(line -> {
-//                    if (line.startsWith("#EXT-X-KEY:")) {
-//                        return Stream.of(line.split(","))
-//                                .map(s -> {
-//                                    if (s.startsWith("URI=\"")) {
-//                                        try {
-//                                            downloadKey(s.substring("URI=\"".length(), s.length() - 2)+"&uid=u_635a25f4dc737_s1boE5ph8a", TS_PATH + "key.key");
-//                                        } catch (IOException e) {
-//                                            throw new RuntimeException(e);
-//                                        }
-//                                        return "URI=\"key.key\"";
-//                                    } else {
-//                                        return s;
-//                                    }
-//                                })
-//                                .collect(Collectors.joining(","));
-//
-//                    } else
-                    if (!line.startsWith("#") && line.length() > 0) {
+                    if (line.startsWith("#EXT-X-KEY:")) {
+                        return Stream.of(line.split(","))
+                                .map(s -> {
+                                    if (s.startsWith("URI=\"")) {
+                                        try {
+                                            downloadKey(s.substring("URI=\"".length(), s.length() - 1) + "&uid=" + uid, keyFilePath);
+                                        } catch (IOException e) {
+                                            throw new RuntimeException(e);
+                                        }
+                                        return "URI=\"key.key\"";
+                                    } else {
+                                        return s;
+                                    }
+                                })
+                                .collect(Collectors.joining(","));
+
+                    } else if (!line.startsWith("#") && line.length() > 0) {
                         int i = index.getAndIncrement();
+                        String tsFilePath = TS_PATH + i + ".ts";
                         try {
-                            downloadTs(tsHost + "/" + tsPath + "/" + line + "&" + tsParam, TS_PATH + i + ".ts");
+                            downloadTs(tsHost + "/" + tsPath + "/" + line + "&" + tsParam, tsFilePath);
+                            DecryptVideo.decryptVideo(tsFilePath, keyFilePath, uid);
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
-                        return TS_PATH + i + ".ts";
+                        tsFiles.add(tsFilePath);
+                        return tsFilePath;
                     } else {
                         return line;
                     }
                 })
                 .collect(Collectors.joining("\n"));
 
-        File m3u8File = new File(TS_PATH + "video.m3u8");
-        FileUtil.writeString(m3u8, m3u8File, Charset.defaultCharset());
+        FileUtil.writeString(tsFiles.stream().map(f -> "file '" + f + "'").collect(Collectors.joining("\n")), TS_PATH + "\\files.txt", Charset.defaultCharset());
+        String cmd = "ffmpeg -f concat -safe 0 -i " + TS_PATH + "files.txt -c copy -strict -2 " + TS_PATH + mp4fileName;
+        aaa(cmd);
+        try {
+            Thread.sleep(10000);
+            tsFiles.forEach(f -> {
+                try {
+                    FileUtil.del(f);
+                } catch (Exception eee) {
+                    aaa("del " + f);
+                }
+            });
+        } catch (InterruptedException e) {
 
-        String cmd = "ffmpeg -allowed_extensions ALL -protocol_whitelist \"file,http,https,crypto,tcp\" -i " + TS_PATH + "video.m3u8 -c copy " + TS_PATH + "\\result.mp4";
-        System.out.println(cmd);
-
+        }
     }
+
 
     static boolean downloadKey(String keyUrl, String filePath) throws IOException {
 
@@ -123,12 +174,13 @@ public class DownloadVideo {
                 .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36")
                 .execute()
                 .bodyStream();
-        File file = new File(filePath);
-        if (!file.exists()) {
-            file.createNewFile();
-        }
-        BufferedOutputStream isbaos = FileUtil.getOutputStream(file);
-        IOUtils.copy(inputStream, isbaos);
+        FileUtil.writeFromStream(inputStream, new File(filePath));
+//        File file = new File(filePath);
+//        if (!file.exists()) {
+//            file.createNewFile();
+//        }
+//        BufferedOutputStream isbaos = FileUtil.getOutputStream(file);
+//        IOUtils.copy(inputStream, isbaos);
         return true;
     }
 
@@ -163,34 +215,5 @@ public class DownloadVideo {
         BufferedOutputStream isbaos = FileUtil.getOutputStream(file);
         IOUtils.copy(inputStream, isbaos);
         return true;
-    }
-
-    static void decryptVideo() {
-
-//        List<Byte> bytes = Arrays.asList(87, 3, 126, 224, 110, 48, 131, 32, 96, 180, 210, 243, 26, 165, 55, 86).stream().map(DownloadVideo::intToByte).collect(Collectors.toList());
-//        byte[] key = new byte[16];
-//        for (int i = 0; i < key.length; i++) {
-//            key[i]=bytes.get(i);
-//        }
-
-        byte[] key = FileUtil.readBytes(new File(TS_PATH + "key.key"));
-//        for (int i = 0; i < 17; i++) {
-            AES aes = new AES(Mode.CBC, Padding.NoPadding, key, getIv(0));
-            byte[] decrypt = aes.decrypt(FileUtil.readBytes(new File(TS_PATH + "280.ts")));
-            FileUtil.writeBytes(decrypt, new File(TS_PATH + "280-bak.ts"));
-//        }
-    }
-    // int转byte
-    public static byte intToByte(int i) {
-        return (byte)(i & 0xFF);
-    }
-
-
-    static byte[] getIv(int sn) {
-        byte[] iv = new byte[16];
-        for (int i = 12; i < 16; i++) {
-            iv[i] = intToByte(sn >> 8 * (15 - i));
-        }
-        return iv;
     }
 }
